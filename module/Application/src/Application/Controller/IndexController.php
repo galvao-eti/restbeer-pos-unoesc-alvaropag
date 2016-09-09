@@ -52,7 +52,28 @@ class IndexController extends AbstractActionController
                 return $this->redirect()->toUrl('/');
             }
         }
+        
+        $id = (int) $this->params()->fromRoute('id', 0);
+        if ($id > 0) { //é uma atualização   
+            $beer = $tableGateway->get($id);            
+            $form->bind($beer);
+            $form->get('send')->setAttribute('value', 'Editar');
+        }
 
         return new ViewModel(['beerForm' => $form]);
     }
+    
+    public function deleteAction()
+    {
+        $BeerId = (int) $this->params()->fromRoute('id', 0);
+        if ($BeerId == 0) {
+            throw new \Exception("Necessário o código da cerveja para exclusão!");
+        }
+
+        $tableGateway = $this->getServiceLocator()
+                      ->get('Application\Model\BeerTableGateway')
+                      ->delete($BeerId);
+        return $this->redirect()->toUrl('/');      
+    }
+
 }
